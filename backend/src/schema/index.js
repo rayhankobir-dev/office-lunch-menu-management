@@ -12,3 +12,17 @@ export const userSchema = {
     password: Joi.string().required(),
   }),
 };
+
+export const menuSchema = {
+  add: Joi.object({
+    name: Joi.string().min(2).required(),
+    unit: Joi.string().max(60).required(),
+  }),
+  edit: Joi.object({
+    name: Joi.string().max(60).required(),
+    unit: Joi.string().max(60).required(),
+  }),
+  id: Joi.object({
+    id: Joi.number().required(),
+  }),
+};
