@@ -3,8 +3,9 @@ import path from "path";
 import express from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import { corsConfig } from "./config.js";
+import { corsConfig, environment } from "./config.js";
 import routes from "./routes/index.js";
+import ApiError from "./helpers/ApiError.js";
 
 // defining express app
 const app = express();
@@ -29,6 +30,19 @@ app.use((req, res, next) => {
 
 // middleware error handler
 app.use((error, req, res, next) => {
+  if (environment == "dev") {
+    console.error(error);
+  }
+
+  // check is api error or not
+  if (error instanceof ApiError) {
+    return res.status(error.statusCode).json({
+      message: error.message,
+      ...error,
+    });
+  }
+
+  // if error is not api error then we will sent 500
   res.status(500).json({
     success: false,
     statusCode: 500,
