@@ -25,3 +25,8 @@ export const dbConfig = {
   user: process.env.DATABASE_USER || "postgres",
   password: process.env.DATABASE_PASSWORD || "postgres",
 };
+
+// session configuration
+export const sessionConfig = {
+  secret: process.env.SESSION_SECRET,
+};
