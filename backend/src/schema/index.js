@@ -26,3 +26,13 @@ export const menuSchema = {
     id: Joi.number().required(),
   }),
 };
+
+export const optionSchema = {
+  edit: Joi.object({
+    date: Joi.date().required(),
+    maxLimit: Joi.number().min(1).required(),
+  }),
+  date: Joi.object({
+    date: Joi.string().required(),
+  }),
+};
