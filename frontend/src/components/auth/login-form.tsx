@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/form";
 import React from "react";
 import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
-import { useForm, SubmitHandler, useFormState } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import { ILoginCredential } from "@/types";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { api } from "@/api";
+import toast from "react-hot-toast";
+import { sleep } from "@/lib/utils";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -24,6 +26,7 @@ const loginSchema = Yup.object().shape({
 
 export default function LoginForm() {
   const [passwordVisible, setPasswordVisible] = React.useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   const loginForm = useForm<ILoginCredential>({
     mode: "onTouched",
@@ -34,16 +37,18 @@ export default function LoginForm() {
     },
   });
 
-  const { isSubmitting } = useFormState({
-    control: loginForm.control,
-  });
-
   const onSubmit: SubmitHandler<ILoginCredential> = async (payload) => {
+    setIsSubmitting(true);
     try {
+      await sleep(500);
       const response = await api.post("/user/login", payload);
-      console.log(response);
+      toast.success(response.data.message);
     } catch (error) {
-      console.log(error);
+      const errorMessage =
+        error?.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
