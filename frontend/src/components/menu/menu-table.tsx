@@ -25,39 +25,25 @@ import {
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
 import { PenBox, Search, Trash2 } from "lucide-react";
-
-const data: Menu[] = [
-  {
-    id: 1,
-    name: "Rice",
-    unit: "half",
-  },
-  {
-    id: 2,
-    name: "Fish Cary",
-    unit: "pice",
-  },
-  {
-    id: 3,
-    name: "Biriyani",
-    unit: "half",
-  },
-  {
-    id: 4,
-    name: "Beef Bhuna",
-    unit: "half",
-  },
-  {
-    id: 5,
-    name: "Burger",
-    unit: "pice",
-  },
-];
+import { api } from "@/api";
+import toast from "react-hot-toast";
 
 export type Menu = {
   id: number;
   name: string;
   unit: string;
+};
+
+const deleteMenu = async (id: number) => {
+  toast.promise(api.delete(`/menus/${id}`), {
+    loading: "Deleting...",
+    success: (response) => {
+      return response.data.message;
+    },
+    error: (error) => {
+      return error.response.data.message;
+    },
+  });
 };
 
 export const columns: ColumnDef<Menu>[] = [
@@ -113,7 +99,10 @@ export const columns: ColumnDef<Menu>[] = [
               <PenBox size={16} />
             </Link>
           </Button>
-          <Button className="w-8 h-8 p-0 bg-rose-100 text-rose-600 hover:bg-rose-500 hover:text-white shadow-none duration-500">
+          <Button
+            onClick={() => deleteMenu(row.original.id)}
+            className="w-8 h-8 p-0 bg-rose-100 text-rose-600 hover:bg-rose-500 hover:text-white shadow-none duration-500"
+          >
             <Trash2 size={17} />
           </Button>
         </div>
@@ -122,7 +111,7 @@ export const columns: ColumnDef<Menu>[] = [
   },
 ];
 
-export function DataTableDemo() {
+export function DataTableDemo({ data }: { data: Menu[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -165,12 +154,12 @@ export function DataTableDemo() {
           />
         </div>
         <div>
-          {table.getSelectedRowModel().rows.length > 0 && (
-            <Button variant="destructive">
+          {table.getSelectedRowModel().rows.length > 1 && (
+            <Button variant="destructive" className="text-xs">
               <span className="pr-1">
-                <Trash2 size={16} />
+                <Trash2 size={14} />
               </span>
-              Bulk Delete
+              Delete Selected
             </Button>
           )}
         </div>

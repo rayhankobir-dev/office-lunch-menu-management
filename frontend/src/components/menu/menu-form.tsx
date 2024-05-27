@@ -43,7 +43,7 @@ export default function MenuForm() {
     setIsSubmitting(true);
     try {
       await sleep(500);
-      const response = await api.post("/user/login", payload);
+      const response = await api.post("/menus", payload);
       toast.success(response.data.message);
     } catch (error: any) {
       const errorMessage =
@@ -115,9 +115,9 @@ export default function MenuForm() {
               variant="default"
               type="submit"
               disabled={isSubmitting}
-              className="w-full md:flex-1 h-11 px-6 border rounded-lg"
+              className="w-full min-w-[6rem] md:flex-1 h-11 px-6 border rounded-lg"
             >
-              {isSubmitting ? <Spinner /> : "Create"}
+              {isSubmitting ? <Spinner textHidden={true} /> : "Create"}
             </Button>
           </form>
         </Form>
