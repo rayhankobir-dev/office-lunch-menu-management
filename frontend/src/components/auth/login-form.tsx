@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Form,
   FormControl,
@@ -14,10 +15,9 @@ import { Input } from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
 import { ILoginCredential } from "@/types";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
-import { api } from "@/api";
-import toast from "react-hot-toast";
+import { Link, Navigate } from "react-router-dom";
 import { sleep } from "@/lib/utils";
+import useAuth from "@/hooks/useAuth";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -27,6 +27,7 @@ const loginSchema = Yup.object().shape({
 export default function LoginForm() {
   const [passwordVisible, setPasswordVisible] = React.useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+  const { login, user }: any = useAuth();
 
   const loginForm = useForm<ILoginCredential>({
     mode: "onTouched",
@@ -41,16 +42,15 @@ export default function LoginForm() {
     setIsSubmitting(true);
     try {
       await sleep(500);
-      const response = await api.post("/user/login", payload);
-      toast.success(response.data.message);
+      await login(payload);
     } catch (error) {
-      const errorMessage =
-        error?.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
+      console.log(error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (user) return <Navigate to="/" />;
 
   return (
     <Form {...loginForm}>

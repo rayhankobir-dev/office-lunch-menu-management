@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavLink } from "react-router-dom";
 import Logo from "@/assets/react.svg";
 import { cn } from "@/lib/utils";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
+import useAuth from "@/hooks/useAuth";
 
 export default function Navbar() {
   const user = { fullName: "raju" };
@@ -47,6 +47,7 @@ export default function Navbar() {
 }
 
 function ProfileOptions() {
+  const { logout } = useAuth();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -72,10 +73,7 @@ function ProfileOptions() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => console.log()}
-          className="text-rose-500"
-        >
+        <DropdownMenuItem onClick={logout} className="text-rose-500">
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>

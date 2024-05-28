@@ -1,20 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
-import Login from "@/pages/login";
-import Home from "@/pages/home";
-import { AdminLayout } from "./components/layout/admin-layout";
-import Menu from "./pages/menu";
+import AppRoutes from "@/routes";
+import useAuth from "@/hooks/useAuth";
+import SpinerLoading from "@/components/ui/spinner";
 
-function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route element={<AdminLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/menus" element={<Menu />} />
-      </Route>
-    </Routes>
-  );
+export default function App() {
+  const { loading }: { loading: boolean } = useAuth();
+  return loading ? <FullPageLoader /> : <AppRoutes />;
 }
 
-export default App;
+function FullPageLoader() {
+  return (
+    <section className="h-screen w-screen flex justify-center items-center ">
+      <SpinerLoading textHidden={true} size={40} className="text-green-600" />
+    </section>
+  );
+}
