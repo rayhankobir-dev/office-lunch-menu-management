@@ -1,8 +1,10 @@
+import { environment, tokenConfig } from "../config.js";
 import ApiError from "../helpers/ApiError.js";
 import ApiResponse from "../helpers/ApiResponse.js";
 import asyncHandler from "../helpers/asyncHandler.js";
 import { client } from "../helpers/db.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 // register new user
 export const signUpUser = asyncHandler(async (req, res) => {
@@ -39,16 +41,41 @@ export const loginUser = asyncHandler(async (req, res) => {
 
     if (!match) throw new ApiError(400, "Invalid email or password");
 
-    const userSessionData = {
+    const userData = {
       id: user.id,
       email: user.email,
       role: user.role,
     };
 
-    // set user into session
-    req.session.user = userSessionData;
+    // generating token with user data
+    const token = await jwt.sign(userData, tokenConfig.secret, {
+      expiresIn: tokenConfig.expiresIn,
+    });
 
-    res.status(200).json(new ApiResponse(200, "Login successful"));
+    // tet the token into cookies
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: environment !== "dev",
+      maxAge: 3600000,
+    });
+
+    res.status(200).json(
+      new ApiResponse(200, "Login successful", {
+        token,
+        user: userData,
+      })
+    );
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const getProfile = asyncHandler(async (req, res) => {
+  try {
+    const query = "SELECT id, full_name, email, role FROM users WHERE id = $1";
+    const result = await client.query(query, [req.user.id]);
+
+    res.status(200).json(new ApiResponse(200, "Success", result.rows[0]));
   } catch (error) {
     throw error;
   }

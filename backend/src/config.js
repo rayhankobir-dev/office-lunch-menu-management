@@ -26,7 +26,8 @@ export const dbConfig = {
   password: process.env.DATABASE_PASSWORD || "postgres",
 };
 
-// session configuration
-export const sessionConfig = {
-  secret: process.env.SESSION_SECRET,
+// token configuration
+export const tokenConfig = {
+  secret: process.env.TOKEN_SECRET || "secret",
+  expiresIn: process.env.TOKEN_EXPIRY || "7d",
 };
