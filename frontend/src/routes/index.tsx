@@ -5,6 +5,7 @@ import Login from "@/pages/login";
 import Home from "@/pages/home";
 import Menu from "@/pages/menu";
 import PrivateRoute from "./private-route";
+import Option from "@/pages/option";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route element={<AdminLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/menus" element={<Menu />} />
+          <Route path="/options" element={<Option />} />
         </Route>
       </Route>
     </Routes>
