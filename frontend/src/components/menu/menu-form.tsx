@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Form,
   FormControl,
@@ -9,9 +8,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { Input } from "../ui/input";
-import { api } from "@/api";
-import toast from "react-hot-toast";
-import { sleep } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@/components/ui/button";
@@ -19,6 +15,7 @@ import Spinner from "@/components/ui/spinner";
 import { IMenuFormData } from "@/types";
 import * as Yup from "yup";
 import React from "react";
+import useMenu from "@/hooks/useMenu";
 
 const loginSchema = Yup.object().shape({
   name: Yup.string()
@@ -30,7 +27,7 @@ const loginSchema = Yup.object().shape({
 
 export default function MenuForm() {
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
-
+  const { addMenu } = useMenu();
   const menuForm = useForm<IMenuFormData>({
     mode: "onTouched",
     resolver: yupResolver(loginSchema),
@@ -41,17 +38,8 @@ export default function MenuForm() {
   });
   const onSubmit: SubmitHandler<IMenuFormData> = async (payload) => {
     setIsSubmitting(true);
-    try {
-      await sleep(500);
-      const response = await api.post("/menus", payload);
-      toast.success(response.data.message);
-    } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await addMenu(payload);
+    setIsSubmitting(false);
   };
   return (
     <Card>

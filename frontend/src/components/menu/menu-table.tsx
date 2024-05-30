@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -13,7 +13,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -23,95 +22,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "react-router-dom";
-import { PenBox, Search, Trash2 } from "lucide-react";
-import { api } from "@/api";
-import toast from "react-hot-toast";
+import { Search, Trash2 } from "lucide-react";
 
-export type Menu = {
-  id: number;
-  name: string;
-  unit: string;
-};
-
-const deleteMenu = async (id: number) => {
-  toast.promise(api.delete(`/menus/${id}`), {
-    loading: "Deleting...",
-    success: (response) => {
-      return response.data.message;
-    },
-    error: (error) => {
-      return error.response.data.message;
-    },
-  });
-};
-
-export const columns: ColumnDef<Menu>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Item name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "unit",
-    header: () => <div className="text-right">Unit</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium capitalize">
-          {row.getValue("unit")}
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    header: () => <div className="flex justify-end">Actions</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="flex gap-2 justify-end">
-          <Button
-            asChild
-            className="w-8 h-8 p-0 bg-green-100 text-green-600 hover:text-white shadow-none duration-500"
-          >
-            <Link to={`${row.original.id}`}>
-              <PenBox size={16} />
-            </Link>
-          </Button>
-          <Button
-            onClick={() => deleteMenu(row.original.id)}
-            className="w-8 h-8 p-0 bg-rose-100 text-rose-600 hover:bg-rose-500 hover:text-white shadow-none duration-500"
-          >
-            <Trash2 size={17} />
-          </Button>
-        </div>
-      );
-    },
-  },
-];
-
-export function DataTableDemo({ data }: { data: Menu[] }) {
+export function DataTableDemo({
+  data,
+  columns,
+}: {
+  data: any[];
+  columns: any;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
