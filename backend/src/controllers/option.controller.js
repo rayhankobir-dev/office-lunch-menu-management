@@ -14,7 +14,7 @@ export const getOptions = asyncHandler(async (req, res) => {
                     'menu_name', m.name,
                     'max_limit', o.max_limit
                 )
-            ) AS options
+            ) AS menus
         FROM 
             options o
         JOIN 
@@ -44,10 +44,12 @@ export const searchOptionsByDate = asyncHandler(async (req, res) => {
       ARRAY_AGG(
           JSON_BUILD_OBJECT(
               'option_id', o.id,
+              'menu_id', m.id,
               'menu_name', m.name,
+              'menu_unit', m.unit,
               'max_limit', o.max_limit
           )
-      ) AS options
+      ) AS menus
       FROM 
         options o
       JOIN 

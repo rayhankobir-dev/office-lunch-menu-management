@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { api } from "@/api";
@@ -12,7 +13,7 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
   const addMenu = async (payload: IMenuFormData) => {
     try {
       const res = await api.post("/menus", payload);
-      setMenus((prev) => [...prev, res.data.data.menu]);
+      setMenus((prev: any) => [...prev, res.data.data.menu]);
       toast.success(res.data.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
@@ -23,8 +24,8 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     toast.promise(api.put(`/menus/${id}`, payload), {
       loading: "Updating...",
       success: (response) => {
-        setMenus((prev) =>
-          prev?.map((item) => (item.id === id ? response.data.menu : item))
+        setMenus((prev: any) =>
+          prev?.map((item: any) => (item.id === id ? response.data.menu : item))
         );
         return response.data.message;
       },
@@ -38,7 +39,7 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     toast.promise(api.delete(`/menus/${id}`), {
       loading: "Deleting...",
       success: (response) => {
-        setMenus((prev) => prev?.filter((item) => item.id !== id));
+        setMenus((prev: any) => prev?.filter((item: any) => item.id !== id));
         return response.data.message;
       },
       error: (error) => {

@@ -1,18 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Spinner from "../ui/spinner";
-import useMenu from "@/hooks/useMenu";
 import { ColumnDef } from "@tanstack/react-table";
-import { IMenu } from "@/types";
+import { User } from "@/types";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { PenBox, Trash2 } from "lucide-react";
+import useUser from "@/hooks/useUser";
 import { DataTable } from "../ui/data-table";
 
-export default function MenuList() {
-  const { menus, isFetching, deleteMenu } = useMenu();
+export default function UserList() {
+  const { users, isFetching, deleteUser } = useUser();
 
-  const columns: ColumnDef<IMenu>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -36,19 +36,19 @@ export default function MenuList() {
       enableHiding: false,
     },
     {
-      accessorKey: "name",
-      header: "Item name",
+      accessorKey: "full_name",
+      header: "Full name",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
+        <div className="capitalize">{row.getValue("full_name")}</div>
       ),
     },
     {
-      accessorKey: "unit",
-      header: () => <div className="text-right">Unit</div>,
+      accessorKey: "email",
+      header: () => <div className="text-left">Email</div>,
       cell: ({ row }) => {
         return (
-          <div className="text-right font-medium capitalize">
-            {row.getValue("unit")}
+          <div className="text-left font-medium lowercase">
+            {row.getValue("email")}
           </div>
         );
       },
@@ -68,7 +68,7 @@ export default function MenuList() {
               </Link>
             </Button>
             <Button
-              onClick={() => deleteMenu(row.original.id)}
+              onClick={() => deleteUser(row.original.id)}
               className="w-8 h-8 p-0 bg-rose-100 text-rose-600 hover:bg-rose-500 hover:text-white shadow-none duration-500"
             >
               <Trash2 size={17} />
@@ -82,13 +82,13 @@ export default function MenuList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All menus</CardTitle>
+        <CardTitle>All users</CardTitle>
       </CardHeader>
       <CardContent>
         {isFetching ? (
           <Spinner />
         ) : (
-          menus && <DataTable columns={columns} data={menus} />
+          users && <DataTable searchBy="email" columns={columns} data={users} />
         )}
       </CardContent>
     </Card>

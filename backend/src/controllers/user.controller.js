@@ -81,6 +81,88 @@ export const getProfile = asyncHandler(async (req, res) => {
   }
 });
 
+export const getAllUsers = asyncHandler(async (req, res) => {
+  try {
+    const query = "SELECT id, full_name, email, role FROM users";
+    const result = await client.query(query);
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Success", { users: result.rows }));
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const createUser = asyncHandler(async (req, res) => {
+  const { full_name, email, password, role } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const query =
+      "INSERT INTO users(full_name, email, password, role) VALUES($1, $2, $3, $4) RETURNING *";
+    const result = await client.query(query, [
+      full_name,
+      email,
+      hashedPassword,
+      role,
+    ]);
+
+    res.status(201).json(
+      new ApiResponse(201, "Success", {
+        user: result.rows[0],
+      })
+    );
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const query = "DELETE FROM users WHERE id = $1 RETURNING*";
+    const result = await client.query(query, [id]);
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Successfully deleted", { user: result.rows })
+      );
+  } catch (error) {
+    throw new ApiError(409, "Can not perform delete operation");
+  }
+});
+
+export const getChoosenOption = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+    const date = req.params.date;
+
+    const query = `
+          SELECT o.id AS option_id, o.menu_id, o.max_limit, m.name AS menu_name, m.unit
+          FROM options o
+          INNER JOIN menus m ON o.menu_id = m.id
+          WHERE o.date = $1 AND o.id NOT IN (
+              SELECT option_id FROM choices WHERE user_id = $2
+          )
+        `;
+
+    const result = await client.query(query, [date, id]);
+
+    res.status(200).json(
+      new ApiResponse(200, "Success", {
+        option: {
+          date,
+          menus: result.rows,
+        },
+      })
+    );
+  } catch (error) {
+    throw error;
+  }
+});
+
 const userExistsByEmail = async (email) => {
   const result = await client.query("SELECT id FROM users WHERE email = $1", [
     email,

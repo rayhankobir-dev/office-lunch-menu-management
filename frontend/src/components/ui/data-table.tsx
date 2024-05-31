@@ -24,12 +24,14 @@ import {
 } from "@/components/ui/table";
 import { Search, Trash2 } from "lucide-react";
 
-export function DataTableDemo({
+export function DataTable({
   data,
   columns,
+  searchBy,
 }: {
   data: any[];
   columns: any;
+  searchBy: string;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -65,9 +67,11 @@ export function DataTableDemo({
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Filter menu item..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn(searchBy)?.getFilterValue() as string) ?? ""
+            }
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
+              table.getColumn(searchBy)?.setFilterValue(event.target.value)
             }
             className="pl-8 h-10 rounded-lg"
           />
